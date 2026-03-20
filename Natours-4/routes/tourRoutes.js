@@ -1,24 +1,22 @@
 const express = require('express');
-const {
-  getAllTours,
-  getTour,
-  createTour,
-  updateTour,
-  deleteTour,
-} = require('../controllers/tourController');
+
+const tourController = require('../controllers/tourController');
 
 const router = express.Router();
-//prettier-ignore
+
+router.param('id', tourController.checkID);
+
+// prettier-ignore
 router
   .route('/')
-  .get(getAllTours)
-  .post(createTour);
+  .get(tourController.getAllTours)
+  .post(tourController.checkBody, tourController.createTour);
 
-//prettier-ignore
+// prettier-ignore
 router
   .route('/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 
 module.exports = router;

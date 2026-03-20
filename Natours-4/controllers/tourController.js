@@ -4,6 +4,28 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is: ${val}`);
+  if (req.params.id > tours.length) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price',
+    });
+  }
+
+  next();
+};
+
 // ROUTE HANDLERS
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -24,24 +46,24 @@ exports.getTour = (req, res) => {
   const tour = tours.find((el) => el.id === id);
 
   if (!tour) {
-    res.status(404).json({
+    return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
     });
-  } else {
-    res.status(200).json({
-      status: 'succes',
-      data: {
-        tour,
-      },
-    });
   }
+  res.status(200).json({
+    status: 'succes',
+    data: {
+      tour,
+    },
+  });
 };
 
 exports.createTour = (req, res) => {
   // console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+  // const newTour = Object.assign({ id: newId }, req.body);
+  const newTour = { id: newId, ...req.body };
 
   tours.push(newTour);
 
@@ -60,31 +82,17 @@ exports.createTour = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  if (req.params.id > tours.length) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  } else {
-    res.status(200).json({
-      status: 'succes',
-      data: {
-        tour: '<Updated tours here...>',
-      },
-    });
-  }
+  res.status(200).json({
+    status: 'succes',
+    data: {
+      tour: '<Updated tours here...>',
+    },
+  });
 };
 
 exports.deleteTour = (req, res) => {
-  if (req.params.id > tours.length) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  } else {
-    res.status(204).json({
-      status: 'succes',
-      data: null,
-    });
-  }
+  res.status(204).json({
+    status: 'succes',
+    data: null,
+  });
 };

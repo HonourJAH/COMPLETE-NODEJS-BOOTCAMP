@@ -1,0 +1,19 @@
+{
+  "extends": ["airbnb", "prettier", "plugin:prettier/recommended"], // Extend Airbnb's base configuration and integrate Prettier
+  "plugins": ["prettier"], // Include Prettier as a plugin
+  "rules": {
+    "prettier/prettier": "error", // Enforce Prettier formatting as an error
+    "space-comment": "off", // Allow comments to start without a space after the comment delimiter
+    "no-console": "off", // Allow the use of console statements for debugging purposes
+    "consistent-return": "off", // Allow functions to have inconsistent return statements
+    "func-names": "off", // Allow anonymous functions
+    "object-shorthand": "off", // Allow object properties to be defined as function expressions
+    "no-process-exit": "off", // Allow the use of process.exit() in Node.js applications
+    "no-param-reassign": "off", // Allow reassignment of function parameters
+    "no-return-await": "off", // Allow the use of return await in async functions
+    "no-underscore-dangle": "off", // Allow the use of dangling underscores in identifiers
+    "class-methods-use-this": "off", // Allow class methods that do not use 'this'
+    "prefer-destructuring": ["error", { "object": true, "array": false }], // Enforce destructuring for objects but not for arrays
+    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|err" }] // Allow unused variables that match the specified patterns (commonly used in Express.js middleware)
+  }
+}
