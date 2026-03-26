@@ -14,6 +14,6 @@
     "no-underscore-dangle": "off", // Allow the use of dangling underscores in identifiers
     "class-methods-use-this": "off", // Allow class methods that do not use 'this'
     "prefer-destructuring": ["error", { "object": true, "array": false }], // Enforce destructuring for objects but not for arrays
-    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|err" }] // Allow unused variables that match the specified patterns (commonly used in Express.js middleware)
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val|err" }] // Allow unused variables that match the specified patterns (commonly used in Express.js middleware)
   }
 }
