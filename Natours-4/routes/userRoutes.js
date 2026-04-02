@@ -1,14 +1,17 @@
 const express = require('express');
 const userController = require('../controllers/userController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
-// prettier-ignore
+
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+
 router
   .route('/')
   .get(userController.getAllUsers)
   .post(userController.createUser);
 
-// prettier-ignore
 router
   .route('/:id')
   .get(userController.getUser)
