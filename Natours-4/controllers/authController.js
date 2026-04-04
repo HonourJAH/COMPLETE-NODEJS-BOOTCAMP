@@ -17,7 +17,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirmed: req.body.passwordConfirmed,
-    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   const token = signToken(newUser._id);
@@ -55,6 +54,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
+// Middleware to protect routes by verifying the JWT token and checking if the user still exists and if they have changed their password after the token was issued. If the token is valid and the user is authorized, it grants access to the protected route.
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   let token;
@@ -71,7 +71,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // // 2) Verification token
+  // // 2) token Verification
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
