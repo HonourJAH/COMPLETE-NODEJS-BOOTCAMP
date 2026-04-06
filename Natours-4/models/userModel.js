@@ -1,3 +1,4 @@
+const crypto = require('crypto'); // For generating secure random tokens
 const mongoose = require('mongoose');
 const validator = require('validator'); // For validating email addresses
 const bcrypt = require('bcryptjs'); // For hashing passwords
@@ -16,6 +17,11 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -34,6 +40,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // Encrypt the password before saving the user document to the database using bcryptjs with a cost of 12. Also, delete the passwordConfirmed field after validation since it's not needed in the database.
@@ -75,6 +83,18 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   // False means NOT changed
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  return resetToken;
 };
 
 // Create the User model using the userSchema and export it for use in other parts of the application.
