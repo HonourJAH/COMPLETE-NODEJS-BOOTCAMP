@@ -1,5 +1,6 @@
 const slugify = require('slugify');
 const mongoose = require('mongoose');
+// const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -77,6 +78,38 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    // guides: Array, // This is the embedding approach, which is not recommended for production since it can lead to data inconsistency and duplication. Instead, we will use referencing by storing the ObjectIds of the guides in the tour document and then populating the guide data when needed.
+
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ], // This is the referencing approach, which is recommended for production since it allows for data consistency and avoids duplication. We will store the ObjectIds of the guides in the tour document and then populate the guide data when needed.
   },
   {
     toJSON: { virtuals: true },
@@ -94,6 +127,12 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+
 // tourSchema.post('save', function (doc, next) {
 //   console.log(doc);
 //   next();
@@ -105,6 +144,15 @@ tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
 
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-_v -passwordChangedAt',
+  });
+
   next();
 });
 
@@ -121,17 +169,4 @@ tourSchema.pre('aggregate', function (next) {
 
 const Tour = mongoose.model('Tour', tourSchema);
 
-// const testTour = new Tour({
-//   name: 'The Park Camper',
-//   price: 497,
-// });
-
-// testTour
-//   .save()
-//   .then((doc) => {
-//     console.log('Tour saved successfully:', doc);
-//   })
-//   .catch((err) => {
-//     console.error('Error saving tour:', err);
-//   });
 module.exports = Tour;
