@@ -121,6 +121,12 @@ tourSchema.virtual('durationweeks').get(function () {
   return this.duration / 7;
 });
 
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // DOCUMENT MIDDLEWARE/HOOK: runs before .save() and .create(). Doesn't work for any insert or find methods, e.g insertMany() and .find()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
